@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  podcast-server:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./uploads:/app/uploads
+      - ./podcast.db:/app/podcast.db
+    environment:
+      - PORT=3000
+    restart: unless-stopped

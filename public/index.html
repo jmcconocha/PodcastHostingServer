@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Podcast Episodes</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold">Podcast Episodes</h1>
+            <a href="/admin" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                Admin Login
+            </a>
+        </div>
+
+        <div class="bg-white rounded-lg shadow p-6">
+            <div id="episodesList" class="space-y-4"></div>
+        </div>
+    </div>
+
+    <script>
+        async function loadEpisodes() {
+            try {
+                const response = await fetch('/api/episodes');
+                if (!response.ok) throw new Error('Failed to load episodes');
+                const episodes = await response.json();
+                const episodesList = document.getElementById('episodesList');
+                
+                if (episodes.length === 0) {
+                    episodesList.innerHTML = '<p class="text-gray-500">No episodes uploaded yet.</p>';
+                    return;
+                }
+                
+                episodesList.innerHTML = episodes.map(episode => `
+                    <div class="border-b pb-4 last:border-b-0">
+                        <h3 class="font-semibold">${episode.title}</h3>
+                        <p class="text-gray-600 text-sm">${episode.description || ''}</p>
+                        <audio controls class="mt-2 w-full">
+                            <source src="${episode.audio_url}" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                        <div class="text-sm text-gray-500 mt-2">
+                            Published: ${new Date(episode.published_at).toLocaleDateString()}
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading episodes:', error);
+                alert('Failed to load episodes. Please refresh the page.');
+            }
+        }
+
+        // Load episodes on page load
+        loadEpisodes();
+    </script>
+</body>
+</html>
